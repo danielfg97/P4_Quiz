@@ -143,54 +143,68 @@ exports.testCmd = (rl,id) => {
 }
 
 
-exports.playCmd = rl => {
-
-  		let score = 0; 
-  		let SinResponder = []; 
-
-      for (i=0; i<models.quiz.count();i++){
-        SinResponder[i]=i;
-      }
-
-  		const letsPlay = () => {
-        return new Promise ((resolve, reject) => {
-  				if(toBePlayed.length === 0) {
-            log(' ¡No hay preguntas que responder!','yellow');
-            log(' Fin del examen. Aciertos: ');
-  					resolve();
-  					return;
-  				}
-  				let pos = Math.floor(Math.random()*SinResponder.length);
-  				let quiz = SinResponder[pos];
-  		    SinResponder.splice(pos, 1); 
-  		    makeQuestion(rl, quiz.question)
-  		    .then(resp => {
-            if(resp.toLowerCase().trim() === quiz.resp.toLowerCase().trim()){
-              score++;
-  				    log(` CORRECTO - Lleva ${score} aciertos`);
-  				    resolve(letsPlay());
-            }else{
-              log('  INCORRECTO ');
-              log(`  Fin del juego. Aciertos: ${score} `);
-  				    resolve();
-  			    }
-  		    })
-  	     })
-  	  }
-  		models.quiz.findAll({raw: true}) 
-  		.then(quizzes => {
-  			SinResponder= quizzes;
+exports.playCmd= rl => {
+  var score = 0;
+  var sinResponder = [];
+  
+    for (i=0; i<models.quiz.count();i++){
+        sinResponder[i]=i;
+        }
+  
+  	const letsPlay = () =>{
+      return new Promise((resolve,reject) =>{
+  	if( sinResponder [0] === "undefined" || typeof sinResponder === "undefined" || sinResponder.length === 0){ //comprobar si esta vacio
+  		console.log("No hay nada más que preguntar.");
+  		console.log("Fin del juego. Aciertos: ", score);
+		  biglog(score,'magenta');
+      resolve();
+  		return;
+  	   }
+  		var indice = 0;  
+  		indice = Math.floor(Math.random() * sinResponder.length);
+      //console.log("%s",indice);
+      var quiz = sinResponder[indice];
+ 		  log(`${colorize(quiz.question,'yellow')}`);
+ 		  sinResponder.splice(indice,1); //borra el quiz del array sinResponder
+      makeQuestion(rl,'Introduzca la respuesta: ')
+      .then(resp =>{
+       if(resp.toLowerCase().trim() === quiz.answer.toLowerCase()){
+          score++;
+          console.log("CORRECTO - Lleva %s aciertos. ",score);
+          resolve(letsPlay());
+        }else{
+            console.log(colorize("Respuesta incorrecta",'red'));
+            console.log("Numero de aciertos: ",score);
+            console.log("Fin del examen");
+            biglog(score,'magenta');
+            resolve();
+            }
+        })
       })
-  		.then(() => {
-  		 	return letsPlay(); 
-  		 })
-  		.catch(e => {
-  			errorlog("Error:" + e); 
-  		})
-  		.then(() => {
-  			biglog(score, 'blue');
-  			rl.prompt();
-  		})
+    }
+      models.quiz.findAll() 
+      .then(quizzes => {     
+      quizzes.forEach((quiz,id) =>{
+      sinResponder[id] = quiz;
+     //log(`  [${id}]:  ${sinResponder[id].question} `);
+    //log(`  [${id}]:  ${sinResponder[id].answer} `);
+       })
+    })
+    .then(() => {
+        return letsPlay();  //es necesario esperar a que la promesa acabe, por eso no es un return a secas
+          })
+    .catch(Sequelize.ValidationError,error =>{
+         errorlog('El quiz es erroneo: ');
+         error.errors.forEach(({message}) => errorlog(message));
+         rl.prompt();
+          })
+    .catch(error => {
+        errorlog(error.message);
+          })
+    .then(() =>{
+     console.log(score);
+     rl.prompt();
+     })
 }
 
 
