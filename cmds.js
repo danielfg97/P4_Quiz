@@ -165,9 +165,9 @@ exports.playCmd= (socket,rl )=> {
   	const letsPlay = () =>{
       return new Promise((resolve,reject) =>{
   	if( sinResponder [0] === "undefined" || typeof sinResponder === "undefined" || sinResponder.length === 0){ //comprobar si esta vacio
-  		console.log(socket, "No hay nada más que preguntar.");
-  		console.log(socket, "Fin del juego. Aciertos: ", score);
-		  biglog(socket, score,'magenta');
+  		log(socket, "No hay nada más que preguntar.", 'magenta');
+  		log(socket, "Fin del juego. Aciertos: ", score);
+		biglog(socket, score,'magenta');
       resolve();
   		return;
   	   }
@@ -181,12 +181,12 @@ exports.playCmd= (socket,rl )=> {
       .then(resp =>{
        if(resp.toLowerCase().trim() === quiz.answer.toLowerCase()){
           score++;
-          console.log(socket, "CORRECTO - Lleva %s aciertos. ",score);
+          log(socket, "CORRECTO - Lleva %s aciertos. ",score);
           resolve(letsPlay());
         }else{
-            console.log(socket, colorize("Respuesta incorrecta",'red'));
-            console.log(socket, "Numero de aciertos: ",score);
-            console.log(socket, "Fin del examen");
+            log(socket, colorize("Respuesta incorrecta",'red'));
+            log(socket, "Numero de aciertos: ",score);
+            log(socket, "Fin del examen");
             biglog(socket, score,'magenta');
             resolve();
             }
