@@ -181,11 +181,11 @@ exports.playCmd= (socket,rl )=> {
       .then(resp =>{
        if(resp.toLowerCase().trim() === quiz.answer.toLowerCase()){
           score++;
-          log(socket, "CORRECTO - Lleva %s aciertos. ",score);
+          log(socket, " CORRECTO - Lleva ${score} aciertos. ");
           resolve(letsPlay());
         }else{
-            log(socket, colorize("Respuesta incorrecta",'red'));
-            log(socket, "Numero de aciertos: ",score);
+            log(socket, "INCORRECTO");
+            log(socket, "Numero de aciertos: ${score} ");
             log(socket, "Fin del examen");
             biglog(socket, score,'magenta');
             resolve();
@@ -197,8 +197,6 @@ exports.playCmd= (socket,rl )=> {
       .then(quizzes => {     
       quizzes.forEach((quiz,id) =>{
       sinResponder[id] = quiz;
-     //log(`  [${id}]:  ${sinResponder[id].question} `);
-    //log(`  [${id}]:  ${sinResponder[id].answer} `);
        })
     })
     .then(() => {
