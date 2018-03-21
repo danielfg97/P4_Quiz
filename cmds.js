@@ -5,15 +5,15 @@ const {log,biglog,errorlog, colorize} = require('./out');
 
 const Sequelize = require('sequelize');
 
-const validateId = (socket,id) =>{
+const validateId = (id) =>{
 
   return new Sequelize.Promise((resolve, reject) => {
     if (typeof id === "undefined"){
-      reject(new Error(socket, `Falta el parametro <id>.`));
+      reject(new Error(`Falta el parametro <id>.`));
     }else{
       id=parseInt(id);
       if(Number.isNaN(id)){
-        reject(new Error(socket, `El valor del parametro <id> no es un numero.`));
+        reject(new Error(`El valor del parametro <id> no es un numero.`));
       }else{
         resolve(id);
       }
@@ -75,7 +75,7 @@ exports.showCmd = (socket, rl,id) => {
   .then(id => models.quiz.findById(id))
   .then(quiz => {
     if(!quiz){
-      throw new Error (socket, ` No existe un quiz asociado al id=${id}.`);
+      throw new Error (` No existe un quiz asociado al id=${id}.`);
     }
     log(socket, `  [${colorize(quiz.id,'magenta')}]: ${quiz.question} ${colorize('=>','magenta')} ${quiz.answer}`);
   })
@@ -125,7 +125,7 @@ exports.testCmd = (socket, rl,id) => {
   .then(id => models.quiz.findById(id))
   .then(quiz => {
     if (!quiz){
-      throw new Error(socket, ` No existe un quiz asociado al id=${id}.`)
+      throw new Error(` No existe un quiz asociado al id=${id}.`)
     }
     return new Promise((resolve, reject) => {
 
@@ -236,7 +236,7 @@ exports.editCmd = (socket, rl,id) => {
   .then(id => models.quiz.findById(id))
   .then(quiz => {
     if(!quiz){
-      throw new Error(socket, `No existe el parametro asociado ${id}.`);
+      throw new Error(`No existe el parametro asociado ${id}.`);
     }
 
     process.stdout.isTTY && setTimeout(() => {rl.write(quiz.question)},0);
